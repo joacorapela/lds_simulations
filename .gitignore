@@ -16,3 +16,4 @@ results/*
 **/.mypy_cache/*
 dist/*
 *.egg-info
+**/old/*
