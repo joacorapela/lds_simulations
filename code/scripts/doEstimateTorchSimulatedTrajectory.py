@@ -86,7 +86,6 @@ def main(argv):
     sqrt_diag_V0_0 = torch.DoubleTensor([sqrt_diag_V0_value
                                          for i in range(len(m0_0))])
     m0_0 = torch.unsqueeze(m0_0, dim=1)
-
     y = torch.from_numpy(simRes["y"].astype(np.double))
     B = torch.from_numpy(simRes["B"].astype(np.double))
     Qe = torch.from_numpy(simRes["Qe"].astype(np.double))
