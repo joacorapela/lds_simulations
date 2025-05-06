@@ -15,7 +15,7 @@ import lds.inference
 
 def main(argv):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--simulation_ID", type=int, help="simulation ID",
+    parser.add_argument("sim_res_number", type=int, help="simulation ID",
                         default=67505436)
     parser.add_argument("--start_offset_secs", type=int, default=0,
                         help="start offset in seconds")
@@ -43,7 +43,7 @@ def main(argv):
                         default="../../results/{:08d}_filtered.{:s}")
     args = parser.parse_args()
 
-    simulation_ID = args.simulation_ID
+    sim_res_number = args.sim_res_number
     start_offset_secs = args.start_offset_secs
     duration_secs = args.duration_secs
     filtering_params_filename = args.filtering_params_filename 
@@ -53,12 +53,11 @@ def main(argv):
     sim_res_filename_pattern = args.sim_res_filename_pattern
     results_filename_pattern = args.results_filename_pattern
 
-    sim_res_filename = sim_res_filename_pattern.format(simulation_ID, "pickle")
-    with open(sim_res_filename, "rb") as f:
-        sim_res = pickle.load(f)
+    sim_res_filename = sim_res_filename_pattern.format(sim_res_number, "npz")
+    sim_res = np.load(sim_res_filename)
     data = sim_res["y"].T
 
-    metadata_filename = sim_res_filename_pattern.format(simulation_ID, "ini")
+    metadata_filename = sim_res_filename_pattern.format(sim_res_number, "ini")
     metadata = configparser.ConfigParser()
     metadata.read(metadata_filename)
     dt = float(metadata["params"]["dt"])
