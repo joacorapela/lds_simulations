@@ -15,7 +15,7 @@ import lds.inference
 
 def main(argv):
     parser = argparse.ArgumentParser()
-    parser.add_argument("sim_res_number", type=int, help="simulation ID",
+    parser.add_argument("--sim_res_num", type=int, help="simulation result number",
                         default=67505436)
     parser.add_argument("--start_offset_secs", type=int, default=0,
                         help="start offset in seconds")
@@ -43,7 +43,7 @@ def main(argv):
                         default="../../results/{:08d}_filtered.{:s}")
     args = parser.parse_args()
 
-    sim_res_number = args.sim_res_number
+    sim_res_num = args.sim_res_num
     start_offset_secs = args.start_offset_secs
     duration_secs = args.duration_secs
     filtering_params_filename = args.filtering_params_filename 
@@ -145,7 +145,7 @@ def main(argv):
         y=data.T, B=B, Bdot=Bdot, Q=Q, m0=m0, V0=V0, Z=Z, Zdot=Zdot, R=R)
 
     results = {"times": times,
-               "measurements": pos,
+               "measurements": data.T,
                "filter_res": filter_res}
 
     # save results
@@ -159,10 +159,11 @@ def main(argv):
 
     with open(results_filename, "wb") as f:
         pickle.dump(results, f)
-    print(f"Saved smoothing results to {results_filename}")
+    print(f"Saved EK filter results to {results_filename}")
 
     metadata = configparser.ConfigParser()
     metadata["params"] = {
+        "sim_res_num": sim_res_num,
         "times": times,
         "start_sample": start_sample,
         "number_samples": number_samples,
