@@ -13,7 +13,9 @@ checkSpelling.csh
 *__pycache__*
 figures/*
 results/*
+metadata/*
 **/.mypy_cache/*
 dist/*
 *.egg-info
 **/old/*
+code/scripts/notes
