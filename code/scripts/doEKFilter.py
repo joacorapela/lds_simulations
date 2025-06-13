@@ -15,14 +15,13 @@ import lds.inference
 
 def main(argv):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--sim_res_num", type=int, help="simulation result number",
-                        default=67505436)
+    parser.add_argument("sim_res_num", type=int, help="simulation result number")
     parser.add_argument("--start_offset_secs", type=int, default=0,
                         help="start offset in seconds")
     parser.add_argument("--duration_secs", type=int, default=-1,
                         help="duration in seconds")
     parser.add_argument("--filtering_params_filename", type=str,
-                        default="../../metadata/00000009_filtering.ini",
+                        default="../../metadata/00000023_simulation.ini",
                         help="filtering parameters filename")
     parser.add_argument("--initial_state_section", type=str,
                         default="initial_state",
@@ -46,22 +45,24 @@ def main(argv):
     sim_res_num = args.sim_res_num
     start_offset_secs = args.start_offset_secs
     duration_secs = args.duration_secs
-    filtering_params_filename = args.filtering_params_filename 
+    filtering_params_filename = args.filtering_params_filename
     initial_state_section = args.initial_state_section
     state_cov_section = args.state_cov_section
     measurements_cov_section = args.measurements_cov_section
     sim_res_filename_pattern = args.sim_res_filename_pattern
     results_filename_pattern = args.results_filename_pattern
 
-    sim_res_filename = sim_res_filename_pattern.format(sim_res_number, "npz")
+    sim_res_filename = sim_res_filename_pattern.format(sim_res_num, "npz")
     sim_res = np.load(sim_res_filename)
     data = sim_res["y"].T
 
-    metadata_filename = sim_res_filename_pattern.format(sim_res_number, "ini")
+    metadata_filename = sim_res_filename_pattern.format(sim_res_num, "ini")
     metadata = configparser.ConfigParser()
     metadata.read(metadata_filename)
-    dt = float(metadata["params"]["dt"])
-    sigma_a = float(metadata["params"]["sigma_a"])
+    simulation_params_filename = metadata["params"]["simulation_params_filename"]
+    simulation_params = configparser.ConfigParser()
+    simulation_params.read(simulation_params_filename)
+    dt = float(simulation_params["other"]["dt"])
 
     start_sample = int(start_offset_secs / dt)
 
@@ -92,25 +93,25 @@ def main(argv):
     sin_theta_m0 = float(filtering_params[initial_state_section]["sin_theta_mean"])
     omega_m0 = float(filtering_params[initial_state_section]["omega_mean"])
 
-    pos_x_V0_sigma = float(filtering_params[initial_state_section]["pos_x_sigma"])
-    vel_x_V0_sigma = float(filtering_params[initial_state_section]["vel_x_sigma"])
-    acc_x_V0_sigma = float(filtering_params[initial_state_section]["acc_x_sigma"])
-    pos_y_V0_sigma = float(filtering_params[initial_state_section]["pos_y_sigma"])
-    vel_y_V0_sigma = float(filtering_params[initial_state_section]["vel_y_sigma"])
-    acc_y_V0_sigma = float(filtering_params[initial_state_section]["acc_y_sigma"])
-    cos_theta_V0_sigma = float(filtering_params[initial_state_section]["cos_theta_sigma"])
-    sin_theta_V0_sigma = float(filtering_params[initial_state_section]["sin_theta_sigma"])
-    omega_V0_sigma = float(filtering_params[initial_state_section]["omega_sigma"])
+    pos_x_V0_std = float(filtering_params[initial_state_section]["pos_x_std"])
+    vel_x_V0_std = float(filtering_params[initial_state_section]["vel_x_std"])
+    acc_x_V0_std = float(filtering_params[initial_state_section]["acc_x_std"])
+    pos_y_V0_std = float(filtering_params[initial_state_section]["pos_y_std"])
+    vel_y_V0_std = float(filtering_params[initial_state_section]["vel_y_std"])
+    acc_y_V0_std = float(filtering_params[initial_state_section]["acc_y_std"])
+    cos_theta_V0_std = float(filtering_params[initial_state_section]["cos_theta_std"])
+    sin_theta_V0_std = float(filtering_params[initial_state_section]["sin_theta_std"])
+    omega_V0_std = float(filtering_params[initial_state_section]["omega_std"])
 
     sigma_a = float(filtering_params[state_cov_section]["sigma_a"])
-    cos_theta_Q_sigma = float(filtering_params[state_cov_section]["cos_theta_Q_sigma"])
-    sin_theta_Q_sigma = float(filtering_params[state_cov_section]["sin_theta_Q_sigma"])
-    omega_Q_sigma = float(filtering_params[state_cov_section]["omega_Q_sigma"])
+    cos_theta_Q_std = float(filtering_params[state_cov_section]["cos_theta_Q_std"])
+    sin_theta_Q_std = float(filtering_params[state_cov_section]["sin_theta_Q_std"])
+    omega_Q_std = float(filtering_params[state_cov_section]["omega_Q_std"])
 
-    pos_x_R_sigma = float(filtering_params[measurements_cov_section]["pos_x_R_sigma"])
-    pos_y_R_sigma = float(filtering_params[measurements_cov_section]["pos_y_R_sigma"])
-    cos_theta_R_sigma = float(filtering_params[measurements_cov_section]["cos_theta_R_sigma"])
-    sin_theta_R_sigma = float(filtering_params[measurements_cov_section]["sin_theta_R_sigma"])
+    pos_x_R_std = float(filtering_params[measurements_cov_section]["pos_x_R_std"])
+    pos_y_R_std = float(filtering_params[measurements_cov_section]["pos_y_R_std"])
+    cos_theta_R_std = float(filtering_params[measurements_cov_section]["cos_theta_R_std"])
+    sin_theta_R_std = float(filtering_params[measurements_cov_section]["sin_theta_R_std"])
 
     alpha = float(filtering_params["other"]["alpha"])
 
@@ -125,19 +126,19 @@ def main(argv):
 
     m0 = np.array([pos_x_m0, vel_x_m0, acc_x_m0, pos_y_m0, vel_y_m0, acc_y_m0,
                    cos_theta_m0, sin_theta_m0, omega_m0], dtype=np.double)
-    V0 = np.diag([pos_x_V0_sigma, vel_x_V0_sigma, acc_x_V0_sigma,
-                  pos_y_V0_sigma, vel_y_V0_sigma, acc_y_V0_sigma,
-                  cos_theta_V0_sigma, sin_theta_V0_sigma, omega_V0_sigma])
+    V0 = np.diag([pos_x_V0_std, vel_x_V0_std, acc_x_V0_std,
+                  pos_y_V0_std, vel_y_V0_std, acc_y_V0_std,
+                  cos_theta_V0_std, sin_theta_V0_std, omega_V0_std])
 
     B, Bdot, Z, Zdot, Q, R = lds.tracking.utils.getNDSwithGaussianNoiseFunctionsForKinematicsAndHO_torch(
         dt=dt, alpha=alpha, sigma_a=sigma_a,
-        cos_theta_Q_sigma=cos_theta_Q_sigma,
-        sin_theta_Q_sigma=sin_theta_Q_sigma,
-        omega_Q_sigma=omega_Q_sigma,
-        pos_x_R_sigma=pos_x_R_sigma,
-        pos_y_R_sigma=pos_y_R_sigma,
-        cos_theta_R_sigma=cos_theta_R_sigma,
-        sin_theta_R_sigma=sin_theta_R_sigma)
+        cos_theta_Q_std=cos_theta_Q_std,
+        sin_theta_Q_std=sin_theta_Q_std,
+        omega_Q_std=omega_Q_std,
+        pos_x_R_std=pos_x_R_std,
+        pos_y_R_std=pos_y_R_std,
+        cos_theta_R_std=cos_theta_R_std,
+        sin_theta_R_std=sin_theta_R_std)
     data = torch.from_numpy(data)
     m0 = torch.from_numpy(m0)
     V0 = torch.from_numpy(V0)
