@@ -72,8 +72,6 @@ def main(argv):
     else:
         number_samples = int(duration_secs / dt)
 
-    times = np.arange(start_sample,
-                      start_sample+number_samples) * dt
     data = data[start_sample:(start_sample+number_samples), :]
 
     # make sure that the first data point is not NaN
@@ -122,10 +120,6 @@ def main(argv):
     filter_res = lds.inference.filterLDS_SS_withMissingValues_torch(
         y=data.T, B=B, Q=Q, m0=m0, V0=V0, Z=Z, R=R)
 
-    results = {"times": times,
-               "measurements": data.T,
-               "filter_res": filter_res}
-
     # save results
     res_prefix_used = True
     while res_prefix_used:
@@ -136,13 +130,13 @@ def main(argv):
     results_filename = results_filename_pattern.format(res_number, "pickle")
 
     with open(results_filename, "wb") as f:
-        pickle.dump(results, f)
-    print(f"Saved EK filter results to {results_filename}")
+        pickle.dump(filter_res, f)
+    print(f"Saved Kalman filter results to {results_filename}")
 
     metadata = configparser.ConfigParser()
     metadata["params"] = {
         "sim_res_num": sim_res_num,
-        "times": times,
+        "sim_res_filename_pattern": sim_res_filename_pattern,
         "start_sample": start_sample,
         "number_samples": number_samples,
         "filtering_params_filename": filtering_params_filename,
