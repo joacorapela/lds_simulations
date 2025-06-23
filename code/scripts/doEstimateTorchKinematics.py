@@ -136,10 +136,10 @@ def main(argv):
     else:
         vars_to_estimate["sqrt_diag_V0"] = True
 
-    B, Q, Z, R_0, Qe = lds.tracking.utils.getLDSmatricesForKinematics_torch(dt=dt,
+    B, Q, Qe, Z, R_0 = lds.tracking.utils.getLDSmatricesForKinematics_torch(dt=dt,
                                                                             sigma_a=sigma_a,
-                                                                            sigma_x=pos_x_R_std,
-                                                                            sigma_y=pos_y_R_std)
+                                                                            pos_x_R_std=pos_x_R_std,
+                                                                            pos_y_R_std=pos_y_R_std)
 
     optim_res = lds.learning.torch_lbfgs_optimize_SS_tracking_diagV0(
         y=y, B=B, sigma_a0=sigma_a, Qe=Qe, Z=Z,
