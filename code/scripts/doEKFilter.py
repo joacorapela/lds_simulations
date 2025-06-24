@@ -104,14 +104,14 @@ def main(argv):
     omega_V0_std = float(filtering_params[initial_state_section]["omega_std"])
 
     sigma_a = float(filtering_params[state_cov_section]["sigma_a"])
-    cos_theta_Q_std = float(filtering_params[state_cov_section]["cos_theta_Q_std"])
-    sin_theta_Q_std = float(filtering_params[state_cov_section]["sin_theta_Q_std"])
-    omega_Q_std = float(filtering_params[state_cov_section]["omega_Q_std"])
+    cos_theta_Q_std = float(filtering_params[state_cov_section]["cos_theta_std"])
+    sin_theta_Q_std = float(filtering_params[state_cov_section]["sin_theta_std"])
+    omega_Q_std = float(filtering_params[state_cov_section]["omega_std"])
 
-    pos_x_R_std = float(filtering_params[measurements_cov_section]["pos_x_R_std"])
-    pos_y_R_std = float(filtering_params[measurements_cov_section]["pos_y_R_std"])
-    cos_theta_R_std = float(filtering_params[measurements_cov_section]["cos_theta_R_std"])
-    sin_theta_R_std = float(filtering_params[measurements_cov_section]["sin_theta_R_std"])
+    pos_x_R_std = float(filtering_params[measurements_cov_section]["pos_x_std"])
+    pos_y_R_std = float(filtering_params[measurements_cov_section]["pos_y_std"])
+    cos_theta_R_std = float(filtering_params[measurements_cov_section]["cos_theta_std"])
+    sin_theta_R_std = float(filtering_params[measurements_cov_section]["sin_theta_std"])
 
     alpha = float(filtering_params["other"]["alpha"])
 
