@@ -40,12 +40,12 @@ def main(argv):
     parser.add_argument("--estInit_metadata_filename_pattern", type=str,
                         default="../../metadata/{:08d}_estimation.ini",
                         help="estimation initialization metadata filename pattern")
-    parser.add_argument("--estRes_metadata_filename_pattern", type=str,
+    parser.add_argument("--est_metadata_filename_pattern", type=str,
                         default="../../results/{:08d}_estimation.ini",
                         help="estimation results metadata filename pattern")
-    parser.add_argument("--estRes_data_filename_pattern", type=str,
+    parser.add_argument("--est_results_filename_pattern", type=str,
                         default="../../results/{:08d}_estimation.pickle",
-                        help="estimation results data filename pattern")
+                        help="estimation results filename pattern")
     args = parser.parse_args()
 
     simRes_number = args.simRes_number
@@ -57,8 +57,8 @@ def main(argv):
     skip_sqrt_diag_V0 = args.skip_sqrt_diag_V0
     simRes_filename_pattern = args.simRes_filename_pattern
     estInit_metadata_filename_pattern = args.estInit_metadata_filename_pattern
-    estRes_metadata_filename_pattern = args.estRes_metadata_filename_pattern
-    estRes_data_filename_pattern = args.estRes_data_filename_pattern
+    est_metadata_filename_pattern = args.est_metadata_filename_pattern
+    est_results_filename_pattern = args.est_results_filename_pattern
 
     simRes_filename = simRes_filename_pattern.format(simRes_number)
     simRes = np.load(simRes_filename)
@@ -152,23 +152,23 @@ def main(argv):
     # save results
     est_prefix_used = True
     while est_prefix_used:
-        estRes_number = random.randint(0, 10**8)
-        estRes_metadata_filename = \
-            estRes_metadata_filename_pattern.format(estRes_number)
-        if not os.path.exists(estRes_metadata_filename):
+        est_number = random.randint(0, 10**8)
+        est_metadata_filename = \
+            est_metadata_filename_pattern.format(est_number)
+        if not os.path.exists(est_metadata_filename):
             est_prefix_used = False
-    estRes_data_filename = estRes_data_filename_pattern.format(estRes_number)
+    est_results_filename = est_results_filename_pattern.format(est_number)
 
     estimRes_metadata = configparser.ConfigParser()
     estimRes_metadata["simulation_params"] = {"simResNumber": simRes_number}
     estimRes_metadata["estimation_params"] = \
         {"estInitNumber": estMeta_number} | vars_to_estimate
-    with open(estRes_metadata_filename, "w") as f:
+    with open(est_metadata_filename, "w") as f:
         estimRes_metadata.write(f)
 
-    with open(estRes_data_filename, "wb") as f:
+    with open(est_results_filename, "wb") as f:
         pickle.dump(optim_res, f)
-    print("Saved results to {:s}".format(estRes_data_filename))
+    print("Saved results to {:s}".format(est_results_filename))
     breakpoint()
 
 
